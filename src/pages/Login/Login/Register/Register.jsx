@@ -7,35 +7,42 @@ import { AuthContext } from '../../../../providers/AuthProvider';
 const Register = () => {
     const [error, setError] = useState('');
     const { createUser } = useContext(AuthContext);
+    const[accepted, setAccepted] = useState(false);
 
     const handleSignUp = (event) => {
+        setError('')
         event.preventDefault()
         const form = event.target;
         const name = form.name.value;
+        const photo = form.photo.value;
         const email = form.email.value;
         const password = form.password.value;
         const confirm = form.confirm.value;
-        console.log(name, email, password, confirm);
+        console.log(name, photo, email, password, confirm);
 
-        if(password !== confirm){
+        if (password !== confirm) {
             setError('Password did not match')
             return
         }
-        else if(password.length < 8){
+        else if (password.length < 8) {
             setError('please add min 8 character')
             return
         }
 
         createUser(email, password)
-        .then(result => {
-            const loggedUser = result.user;
-            console.log(loggedUser);
-        })
-        .then(error => {
-            console.log(error);
-            // setError(error.message)
-        })
+            .then(result => {
+                const loggedUser = result.user;
+                console.log(loggedUser);
+            })
+            .then(error => {
+                console.log(error);
+                // setError(error.message)
+            })
 
+    }
+
+    const handleAccepted = event =>{
+        setAccepted(event.target.checked);
     }
 
     return (
@@ -63,9 +70,13 @@ const Register = () => {
                     <Form.Control type="password" name='confirm' placeholder="Conform Password" required />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formBasicCheckbox">
-                    <Form.Check type="checkbox" name='accept' label="Accept Terms & Conditions" />
+                    <Form.Check 
+                    onClick={handleAccepted}
+                    type="checkbox" 
+                    name='accept' 
+                    label={<>Accept <Link to="/terms">Terms & Conditions</Link></>} />
                 </Form.Group>
-                <Button variant="primary" type="submit">
+                <Button disabled={!accepted} variant="primary" type="submit">
                     Register
                 </Button>
                 <br />
@@ -76,7 +87,7 @@ const Register = () => {
 
                 </Form.Text>
                 <Form.Text className="text-danger">
-                <p>{error}</p>
+                    <p>{error}</p>
                 </Form.Text>
             </Form>
         </Container>
